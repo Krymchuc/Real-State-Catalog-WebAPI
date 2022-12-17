@@ -1,0 +1,270 @@
+﻿@model IEnumerable<Real_State_Catalog.Models.Offer>
+
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+ <div class="hero">
+      <div class="hero-slide">
+        <div
+          class="img overlay"
+          style="background-image: url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')"
+        ></div>
+        <div
+          class="img overlay"
+          style="background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')"
+        ></div>
+        <div
+          class="img overlay"
+          style="background-image: url('https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')"
+        ></div>
+  </div>
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="row d-flex justify-content-center">
+                    <div class="col-md-10 col-lg-9 col-xl-8">
+                        <div class="card shadow-lg p-3 mb-5 rounded">
+                            <div class="card-header bg-white">
+                                <h4 class="mb-1">Find the accommodation of your dreams</h4>
+                                <small class="text-muted">From a cozy country cottage to a designer city apartment</small>
+                            </div>
+
+                            <form asp-action="Search" method="get">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label style="margin: 0.2em;">Town</label>
+                                        <input type="text" class="form-control" name="city" placeholder="Where are you going?" required>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label style="margin: 0.2em;">Arrival</label>
+                                        <input type="date" class="form-control" name="arrivalDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label style="margin: 0.2em;">Departure</label>
+                                        <input type="date" class="form-control" name="departureDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" required>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label style="margin: 0.2em;">Travelers</label>
+                                        <input type="number" min="1" step="1" class="form-control" name="nbPerson" placeholder="1" required>
+                                    </div>
+
+                                    <div class="col-md-1 d-grid gap-2">
+                                        <label> </label>
+                                        <button type="submit" class="btn btn-success"><span class="bi bi-search"></span></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      </div>
+   </div>
+
+  
+<div class="album py-5 bg-light">
+    <div class="container">
+
+       @if (ViewBag.Search == null && ViewBag.Filter==null)
+        {
+            <h2>Last published offers</h2>
+        }
+        else if(ViewBag.Search != null)
+        {
+            <h2>Offers corresponding to your search</h2>
+        }
+        else if(ViewBag.Filter != null)
+        {
+            <h2>Offers corresponding to your filter</h2>
+        }
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 1em;">
+
+            @if (Model != null)
+            {
+                int offerNb = 0;
+
+                foreach (var item in Model)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div id="carousel-offer-@offerNb" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    @for (int i = 0; i < item.Accommodation.Pictures.Count; i++)
+                                    {
+                                        <button type="button" data-bs-target="#carousel-offer-@offerNb" data-bs-slide-to="@i"
+                                                @if (i == 0) { @: class="active" aria-current="true"
+                                                } aria-label="Slide @i"></button>
+                                    }
+                                </div>
+
+                                <div class="carousel-inner">
+                                    @{ var firstImg = true;
+                                        foreach (Picture picture in item.Accommodation.Pictures)
+                                        {
+                                            <div class="carousel-item @if (firstImg) {
+                                            @:active
+                                            firstImg = false; }">
+                                                <img src="~/upload/@picture.FileName" class="d-block w-100 card-img-top" style="object-fit: cover; width: 100%; height: 15em;" alt="">
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-offer-@offerNb" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-offer-@offerNb" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+
+                            <div class="card-body">
+                                <a asp-controller="Offer" asp-action="View" asp-route-id="@item.Id.ToString()" style="color: black; text-decoration: none;">
+                                    <h4 class="mb-1">@item.Accommodation.Address.ShortAddress()</h4>
+                                </a>
+
+                                <p class="card-text">
+                                    Submitted by
+                                    @Html.DisplayFor(modelItem => item.Accommodation.User.FirstName) @Html.DisplayFor(modelItem => item.Accommodation.User.LastName)
+                                </p>
+
+                                <p>Available from @Html.DisplayFor(modelItem => item.StartAvailability) to @Html.DisplayFor(modelItem => item.EndAvailability)</p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a asp-controller="Offer" asp-action="View" asp-route-id="@item.Id.ToString()" class="btn btn-primary py-2 px-3">See details</a>
+                                    </div>
+
+                                    <small class="text-success" style="font-weight: bold;">@Html.DisplayFor(modelItem => item.PricePerNight) $/Night</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    offerNb++;
+                }
+            }
+        </div>
+    </div>
+</div>
+
+    <div class="section section-4 bg-light">
+      <div class="container">
+        <div class="row justify-content-center text-center mb-5">
+          <div class="col-lg-5">
+            <h2 class="font-weight-bold heading text-primary mb-4">
+              Let's find home that's perfect for you
+            </h2>
+            <p class="text-black-50">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
+              enim pariatur similique debitis vel nisi qui reprehenderit.
+            </p>
+          </div>
+        </div>
+        <div class="row justify-content-between mb-5">
+          <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2">
+            <div class="img-about dots">
+              <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Image" class="img-fluid" />
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="d-flex feature-h">
+              <span class="wrap-icon me-3">
+                <span class="icon-home2"></span>
+              </span>
+              <div class="feature-text">
+                <h3 class="heading">2M Properties</h3>
+                <p class="text-black-50">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Nostrum iste.
+                </p>
+              </div>
+            </div>
+
+            <div class="d-flex feature-h">
+              <span class="wrap-icon me-3">
+                <span class="icon-person"></span>
+              </span>
+              <div class="feature-text">
+                <h3 class="heading">Top Rated Agents</h3>
+                <p class="text-black-50">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Nostrum iste.
+                </p>
+              </div>
+            </div>
+
+            <div class="d-flex feature-h">
+              <span class="wrap-icon me-3">
+                <span class="icon-security"></span>
+              </span>
+              <div class="feature-text">
+                <h3 class="heading">Legit Properties</h3>
+                <p class="text-black-50">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Nostrum iste.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row section-counter mt-5">
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number"
+                ><span class="countup text-primary">3298</span></span
+              >
+              <span class="caption text-black-50"># of Buy Properties</span>
+            </div>
+          </div>
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number"
+                ><span class="countup text-primary">2181</span></span
+              >
+              <span class="caption text-black-50"># of Sell Properties</span>
+            </div>
+          </div>
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="500"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number"
+                ><span class="countup text-primary">9316</span></span
+              >
+              <span class="caption text-black-50"># of All Properties</span>
+            </div>
+          </div>
+          <div
+            class="col-6 col-sm-6 col-md-6 col-lg-3"
+            data-aos="fade-up"
+            data-aos-delay="600"
+          >
+            <div class="counter-wrap mb-5 mb-lg-0">
+              <span class="number"
+                ><span class="countup text-primary">7191</span></span
+              >
+              <span class="caption text-black-50"># of Agents</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+

@@ -1,0 +1,382 @@
+﻿@model Real_State_Catalog.Models.Offer
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";   
+}
+
+<div style="padding-top: 0.5em">
+    <partial name="_StatusMessage" />
+</div>
+
+<div class="card main-card-0_5">
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            @for (int i = 0; i < Model.Accommodation.Pictures.Count; i++)
+            {
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i"
+                        @if (i == 0) { @: class="active" aria-current="true"
+                        } aria-label="Slide @i"></button>
+            }
+        </div>
+
+        <div class="carousel-inner">
+            @{ var firstImg = true;
+                foreach (Picture picture in Model.Accommodation.Pictures)
+                {
+                        <div class="carousel-item @if (firstImg) {
+                        @:active
+                        firstImg = false; }">
+
+                            <a href="~/upload/@picture.FileName" target="_blank">
+                                <img src="~/upload/@picture.FileName" class="d-block w-100 card-img-top" style="object-fit: cover; width: 100%; height: 450px;" alt="">
+                            </a>
+                        </div>
+                }
+            }
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="card-body">
+
+        <div class="container">
+            <div class="row">
+
+                <div class="col-sm-8">
+                    <div class="row align-items-center">
+
+                        <div class="col">
+                            <h3>@Model.Accommodation.Name</h3>
+                        </div>
+                         <div class="col-auto">
+                            @if (ViewBag.Bookmark != null)
+                            {
+                                if (!ViewBag.Bookmark)
+                                {
+                                    <form asp-action="AddBookmark" style="display: inline-block;">
+                                        <input type="hidden" asp-for="@Model.Id" />
+
+                                        <button style="background: none; padding: 0px; border: none;" type="submit">
+                                            <h3><i class="bi bi-bookmark-plus" style="color:black;"></i></h3>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="DeleteBookmark" style="display: inline-block;">
+                                        <input type="hidden" asp-for="@Model.Id" />
+
+                                        <button style="background: none; padding: 0px; border: none;" type="submit">
+                                            <h3><i class="bi bi-bookmark-x-fill" style="color:black;"></i></h3>
+                                        </button>
+                                    </form>
+                                }
+                            }
+                        </div>
+
+                    </div>
+
+                    <hr class="solid">
+
+                    <div class="d-grid gap-1">
+                        <div class="p-1">
+                            <h5 style="display:inline;"><i class="bi bi-house-door" style="vertical-align: -1px;"></i></h5>
+                            <h6 style="display:inline;">@Model.Accommodation.Type</h6>
+                        </div>
+
+                        <div class="p-1">
+                            <h5 style="display:inline;"><i class="bi bi-geo-alt" style="vertical-align: -2px;"></i></h5>
+                            <h6 style="display:inline;">@Model.Accommodation.Address.ShortAddress()</h6>
+                        </div>
+
+                        <div class="p-1">
+                            <h5 style="display:inline;"><i class="bi bi-person" style="vertical-align: -1px;"></i></h5>
+                            <h6 style="display:inline;">@Model.Accommodation.MaxTraveler travelers maximum</h6>
+                        </div>
+
+                        <div class="p-1">
+                            <h5 style="display:inline;"><i class="bi bi-file-text" style="vertical-align: -2px;"></i></h5>
+                            <p class="card-text" style="display:inline;">@Model.Accommodation.Description</p>
+                        </div>
+                    </div>
+
+                    <hr class="solid">
+
+                    <h4>Rooms [@Model.Accommodation.Rooms.Count] :</h4>
+
+                    @foreach (var item in Model.Accommodation.Rooms)
+                    {
+                        <div class="card" style="margin-bottom:1em;">
+                            <div class="card-body">
+                                @{ string iconSrc = item.RoomType.ToString().ToLower() + ".svg"; }
+
+                                <h5 class="card-title">
+                                    <img src="~/svg/@iconSrc" alt="Room icon" height="20px" width="20px" style="vertical-align: -3px;" />
+                                </h5>
+
+                                <p class="card-text">
+                                    <b>Equipment: </b>
+                                    @item.AmenitiesStr()
+                                </p>
+                            </div>
+                        </div>
+                    }
+
+                    <hr class="solid">
+
+                    <h4>Accommodation rules :</h4>
+
+                    <div class="d-grid gap-1">
+                        <div class="p-1">
+                            <img src="~/svg/clock.svg" alt="Clock icon" height="20px" width="20px" style="vertical-align: -4px; margin-right:3px;" />
+                            <h6 style="display:inline;">
+                                Arriving time : After @Model.Accommodation.HouseRules.ArrivalHour.ToString("hh\\hmm") - Departure time : Avant @Model.Accommodation.HouseRules.DepartureHour.ToString("hh\\hmm")
+                            </h6>
+                        </div>
+
+                        <div class="p-1">
+                            <img src="~/svg/pet.svg" alt="Pet icon" height="20px" width="20px" style="vertical-align: -4px; margin-right:3px;" />
+                            <h6 style="display:inline;">Animals allowed : @(Model.Accommodation.HouseRules.PetAllowed ? "Yes" : "Non")</h6>
+                        </div>
+
+                        <div class="p-1">
+                            <img src="~/svg/party.svg" alt="Party icon" height="20px" width="20px" style="vertical-align: -4px; margin-right:3px;" />
+                            <h6 style="display:inline;">Authorized parties : @(Model.Accommodation.HouseRules.PartyAllowed ? "Yes" : "Non")</h6>
+                        </div>
+
+                        <div class="p-1">
+                            <img src="~/svg/smoke.svg" alt="Smoke icon" height="20px" width="20px" style="vertical-align: -4px; margin-right:3px;" />
+                            <h6 style="display:inline;">Smoking accommodation : @(Model.Accommodation.HouseRules.SmokeAllowed ? "Yes" : "Non")</h6>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="card shadow p-3 mb-5 bg-body rounded">
+                        <div class="card-header">
+                            <h5 class="card-title">Reservation</h5>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="d-grid gap-1">
+                                <div class="p-1">
+                                    <h6 style="display:inline;"><i class="bi bi-cash"></i></h6>
+                                    <h6 style="display:inline;">Price per night : @Model.PricePerNight $</h6>
+                                </div>
+
+                                <div class="p-1">
+                                    <h6 style="display:inline;"><i class="bi bi-bucket"></i></h6>
+                                    <h6 style="display:inline;">Cleaning fee : @Model.CleaningFee $</h6>
+                                </div>
+                            </div>
+
+                            <hr class="solid">
+
+                            <p class="card-text">Select your booking dates :</p>
+
+                            <form asp-controller="Booking" asp-action="Create">
+                                <input type="hidden" asp-for="Id" name="OfferId"/>
+
+                                @{ 
+                                    var minArrival = (DateTime.Now > Model.StartAvailability ? DateTime.Now : Model.StartAvailability);
+                                }
+
+                                <div class="row g-3" style="margin-bottom: 0.5em;">
+                                    <div class="col col-md-7">
+                                        <label for="inputArrivalDate">Come</label>
+                                        <input type="date" class="form-control" id="inputArrivalDate" name="ArrivalDate"
+                                               min="@minArrival.ToString("yyyy-MM-dd")" max="@Model.EndAvailability.AddDays(-1).ToString("yyyy-MM-dd")" required>
+                                    </div>
+
+                                    <div class="col col-md-5">
+                                        <label for="inputArrivalTime">Hour</label>
+                                        <input type="time" class="form-control" id="inputArrivalTime" name="ArrivalTime"
+                                               min="@Model.Accommodation.HouseRules.ArrivalHour.ToString("hh\\:mm")" max="23:59" required>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3" style="margin-bottom: 0.5em;">
+                                    <div class="col col-md-7">
+                                        <label for="inputDepartureDate">Departure</label>
+                                        <input type="date" class="form-control" id="inputDepartureDate" name="DepartureDate"
+                                               min="@minArrival.AddDays(1).ToString("yyyy-MM-dd")" max="@Model.EndAvailability.ToString("yyyy-MM-dd")" required>
+                                    </div>
+
+                                    <div class="col col-md-5">
+                                        <label for="inputDepartureTime">Hour</label>
+                                        <input type="time" class="form-control" id="inputDepartureTime" name="DepartureTime"
+                                               min="00:00" max="@Model.Accommodation.HouseRules.DepartureHour.ToString("hh\\:mm")" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="nbPersonSelector">Number of traveler(s)</label>
+                                    <select class="form-control form-select" id="nbPersonSelector" name="NbPerson" required>
+                                        @for (int i = 1; i <= Model.Accommodation.MaxTraveler; i++)
+                                        {
+                                            <option>@i</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" type="submit">To book</button>
+                                </div>
+                            </form>
+                           </div>
+                        </div>
+                    </div>
+                     <!--Map-->
+                              <hr class="solid" style="margin-top:25px;">
+                              <h5>Location</h5>            
+                              <div class="map">
+                                <div id="MapLocation" style="height: 300px">
+                                   <div class="input-group" style="position: absolute; z-index: 1000; bottom: 20px; right: 170px; width: 150px; opacity: 0.8"> 
+                                        <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                              <div class="input-group-text" style="border-radius:0px; line-height: 2.4;">Lat</div>
+                                            </div>
+                                            <input asp-for="@Model.Accommodation.LatitudeRaw"  class="form-control" type="text" readonly="" value="@Model.Accommodation.Latitude" id="LatitudeRaw" name="LatitudeRaw">
+                                        </div>
+                                        </div>
+                                        <div class="input-group" style="position: absolute; z-index: 1000; bottom: 20px; right: 10px; width: 150px; opacity: 0.8">
+                                             <div class="input-group mb-2">
+                                            <div class="input-group-prepend">
+                                              <div class="input-group-text" style="border-radius:0px; line-height: 2.4;">Lng</div>
+                                            </div>
+                                             <input asp-for="@Model.Accommodation.LongitudeRaw" readonly=""  class="form-control" type="text" readonly="" value="@Model.Accommodation.Longitude" id="LongitudeRaw" name="LongitudeRaw">
+                                        </div>                   
+                                    </div>
+                                </div>
+                              </div>
+                            <!--End of map-->
+                                <!--Communication with manager-->
+                                    <!-- ======= Contact Single ======= -->
+                                    <hr class="solid" style="margin-top:25px;">
+                                    <section class="contact">
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12 section-t8">
+                                            <div class="row">
+                                              <div class="col-md-7">
+                                                  <div> <h4>Send your message</h4></div>
+                                               <form action="mailto:" method="post" enctype="text/plain">
+                                                  <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                      <div class="form-group">
+                                                        <input type="text" name="name" class="form-control form-control-lg form-control-a" placeholder="Your Name" required>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                      <div class="form-group">
+                                                        <input name="email" type="email" class="form-control form-control-lg form-control-a" placeholder="Your Email" required>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-12 mb-3">
+                                                      <div class="form-group">
+                                                        <input type="text" name="subject" class="form-control form-control-lg form-control-a" placeholder="Subject" required>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                      <div class="form-group">
+                                                        <textarea name="message" class="form-control" name="message" cols="45" rows="8" placeholder="Message" required></textarea>
+                                                      </div>
+                                                    </div>                                  
+                                                    <div class="col-md-12 text-center">
+                                                      <button type="submit" class="btn btn-a">Send Message</button>
+                                                    </div>
+                                                  </div>
+                                                </form>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </section><!-- End Contact Single-->
+                </div>
+            </div>     
+
+        </div>
+    </div>
+</div>
+<style>
+.map { 
+    width: 100%;
+    border: 3px solid #red;
+    height: 300px;
+}
+</style>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/leaflet/leaflet.min.js"></script>
+    <link href="~/leaflet/leaflet.min.css" rel="stylesheet" />
+    <script>
+       /* $(function() {
+
+            var map = L.map('map').setView([48, 31], 15);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 7,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            var marker = L.marker([48, 31]).addTo(map);            
+
+        });*/
+
+
+
+        $(function() {
+
+          var latr = document.getElementById('LatitudeRaw').value;
+          var logr = document.getElementById('LongitudeRaw').value;
+          var lat=latr.replace(",", ".");
+          var log=logr.replace(",", ".");
+          var curLocation = [lat,log];
+
+          if (curLocation[0] == 0 && curLocation[1] == 0) {
+            curLocation = [48, 31];
+          }
+
+          var map = L.map('MapLocation').setView(curLocation, 10);
+
+          L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              maxZoom: 15,
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+
+          map.attributionControl.setPrefix(false);
+
+          var marker = new L.marker(curLocation);
+
+          marker.on('dragend', function(event) {
+            var position = marker.getLatLng();
+            marker.setLatLng(position, {
+            }).bindPopup(position).update();
+            $("#LatitudeRaw").val(position.lat);
+            $("#LongitudeRaw").val(position.lng).keyup();
+          });
+
+          $("#LatitudeRaw, #LongitudeRaw").change(function() {
+            var position = [parseInt($("#LatitudeRaw").val()), parseInt($("#LongitudeRaw").val())];
+            marker.setLatLng(position, {
+            }).bindPopup(position).update();
+            map.panTo(position);
+          });
+
+          map.addLayer(marker);
+        })
+       
+    </script>
+}

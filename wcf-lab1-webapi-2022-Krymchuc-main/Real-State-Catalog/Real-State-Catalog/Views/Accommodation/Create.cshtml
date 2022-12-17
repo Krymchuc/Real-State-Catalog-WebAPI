@@ -1,0 +1,234 @@
+﻿@model Real_State_Catalog.Models.Accommodation
+
+@{
+    ViewData["Title"] = "Housing Creation";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<div class="card text-center main-card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs nav-fill">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="true" href="#">Information</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Photos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Rooms</a>
+            </li>
+        </ul>
+    </div>
+    <form asp-action="Create">
+        <div class="card-body text-start">
+
+            <h5>General informations:</h5>
+
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row form-group">
+                <div class="col-md-7">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="A beautiful view from the windows of Andriiivsky Uzviz in the city of Kyiv" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="Type" class="control-label"></label>
+                    <select asp-for="Type" class="form-control form-select">
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Room in apartment">Room in apartment</option>
+                        <option value="Room in house">Room in house</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="MaxTraveler" class="control-label"></label>
+                    <input asp-for="MaxTraveler" class="form-control" min="1" step="1" placeholder="2" />
+                    <span asp-validation-for="MaxTraveler" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <!--Map-->
+              <hr class="solid">
+              <h5>Location</h5>            
+              <div class="map">
+                <div id="MapLocation" style="height: 300px">
+                   <div class="input-group" style="position: absolute; z-index: 1000; bottom: 20px; right: 170px; width: 150px; opacity: 0.8"> 
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text" style="border-radius:0px; line-height: 2.4;">Lat</div>
+                            </div>
+                            <!--<label asp-for="Latitude" class="control-label"></label>-->
+                            <input asp-for="LatitudeRaw"  class="form-control" type="text" readonly="" value="0" id="LatitudeRaw" name="LatitudeRaw">
+                            <!--<span asp-validation-for="Latitude" class="text-danger"></span>-->
+                        </div>
+                        </div>
+                        <div class="input-group" style="position: absolute; z-index: 1000; bottom: 20px; right: 10px; width: 150px; opacity: 0.8">
+                             <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                              <div class="input-group-text" style="border-radius:0px; line-height: 2.4;">Lng</div>
+                            </div>
+                             <!--<label asp-for="Longitude" class="control-label"></label>-->
+                             <input asp-for="LongitudeRaw" readonly=""  class="form-control" type="text" readonly="" value="0" id="LongitudeRaw" name="LongitudeRaw">
+                             <!--<span asp-validation-for="Longitude" class="text-danger"></span>-->
+                        </div>                   
+                    </div>
+                </div>
+              </div>
+            </div>
+            <!--End of map-->
+
+            <hr class="solid">
+            <h5>Adresse :</h5>
+
+            <div class="row form-group">
+                <div class="col-md-7">
+                    <label asp-for="Address.StreetAndNumber" class="control-label"></label>
+                    <input asp-for="Address.StreetAndNumber" class="form-control" placeholder="Lutska street 1" />
+                    <span asp-validation-for="Address.StreetAndNumber" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-5">
+                    <label asp-for="Address.Complement" class="control-label"></label>
+                    <input asp-for="Address.Complement" class="form-control" placeholder="Apartment 12" />
+                    <span asp-validation-for="Address.Complement" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-6">
+                    <label asp-for="Address.City" class="control-label"></label>
+                    <input asp-for="Address.City" class="form-control" placeholder="Kyiv" />
+                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-2">
+                    <label asp-for="Address.PostalCode" class="control-label"></label>
+                    <input asp-for="Address.PostalCode" class="form-control" placeholder="43052" />
+                    <span asp-validation-for="Address.PostalCode" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Address.Country" class="control-label"></label>
+                    <input asp-for="Address.Country" class="form-control" placeholder="Ukraine" />
+                    <span asp-validation-for="Address.Country" class="text-danger"></span>
+                </div>
+            </div>
+
+            <hr class="solid">
+            <h5>Rules of procedure:</h5>
+
+            <div class="row form-group">
+                <div class="col">
+                    <label asp-for="HouseRules.ArrivalHour" class="control-label"></label>
+                    <input asp-for="HouseRules.ArrivalHour" type="time" class="form-control">
+                    <span asp-validation-for="HouseRules.ArrivalHour" class="text-danger"></span>
+                </div>
+
+                <div class="col">
+                    <label asp-for="HouseRules.DepartureHour" class="control-label"></label>
+                    <input asp-for="HouseRules.DepartureHour" type="time" class="form-control">
+                    <span asp-validation-for="HouseRules.DepartureHour" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input asp-for="HouseRules.PetAllowed" type="checkbox" class="form-check-input">
+                <label asp-for="HouseRules.PetAllowed" class="form-check-label"></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input asp-for="HouseRules.PartyAllowed" type="checkbox" class="form-check-input">
+                <label asp-for="HouseRules.PartyAllowed" class="form-check-label"></label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input asp-for="HouseRules.SmokeAllowed" type="checkbox" class="form-check-input">
+                <label asp-for="HouseRules.SmokeAllowed" class="form-check-label"></label>
+            </div>
+        
+
+        <div class="form-group">
+            <button type="submit" value="Save" class="btn btn-success">Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to MENU</a>
+        </div>
+    </form>
+</div>
+
+
+<style>
+.map { 
+    width: 100%;
+    border: 3px solid #red;
+    height: 300px;
+}
+</style>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/leaflet/leaflet.min.js"></script>
+    <link href="~/leaflet/leaflet.min.css" rel="stylesheet" />
+    <script>
+       /* $(function() {
+
+            var map = L.map('map').setView([48, 31], 15);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 7,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            var marker = L.marker([48, 31]).addTo(map);            
+
+        });*/
+
+
+
+        $(function() {
+
+          var curLocation = [0,0];
+
+          if (curLocation[0] == 0 && curLocation[1] == 0) {
+            curLocation = [48, 31];
+          }
+
+          var map = L.map('MapLocation').setView(curLocation, 10);
+
+          L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              maxZoom: 15,
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+
+          map.attributionControl.setPrefix(false);
+
+          var marker = new L.marker(curLocation, {
+            draggable: 'true'
+          });
+
+          marker.on('dragend', function(event) {
+            var position = marker.getLatLng();
+            marker.setLatLng(position, {
+              draggable: 'true'
+            }).bindPopup(position).update();
+            $("#LatitudeRaw").val(position.lat);
+            $("#LongitudeRaw").val(position.lng).keyup();
+          });
+
+          $("#LatitudeRaw, #LongitudeRaw").change(function() {
+            var position = [parseInt($("#LatitudeRaw").val()), parseInt($("#LongitudeRaw").val())];
+            marker.setLatLng(position, {
+              draggable: 'true'
+            }).bindPopup(position).update();
+            map.panTo(position);
+          });
+
+          map.addLayer(marker);
+        })
+       
+    </script>
+}
